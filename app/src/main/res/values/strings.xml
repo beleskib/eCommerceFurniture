@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">eCommerceFurniture</string>
+    <string name="rightAddress">The Right Address\nFor Shopping\nAnyday</string>
+    <string name="qulity">It is now very easy to reach the\nbest quality among the\nproducts on the internet!</string>
+    <string name="g_chair">Chair</string>
+    <string name="g_cupboard">Cupboard</string>
+    <string name="g_table">Table</string>
+    <string name="g_accessory">Accessory</string>
+    <string name="g_furniture">Furniture</string>
+</resources>

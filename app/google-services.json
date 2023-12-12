@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "439859857987",
+    "project_id": "ecommercefurniture-33714",
+    "storage_bucket": "ecommercefurniture-33714.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439859857987:android:34f7a68de7eb1d68ce62f6",
+        "android_client_info": {
+          "package_name": "com.example.ecommercefurniture"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439859857987-cg4snfhhn1bj3ep7uevlrj4or528s31g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmwvjRxXfrqx5mKUsv-VtVGCDeCSc7BlA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439859857987-cg4snfhhn1bj3ep7uevlrj4or528s31g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439859857987:android:a84422cdf4254422ce62f6",
+        "android_client_info": {
+          "package_name": "com.example.productadder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439859857987-cg4snfhhn1bj3ep7uevlrj4or528s31g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmwvjRxXfrqx5mKUsv-VtVGCDeCSc7BlA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439859857987-cg4snfhhn1bj3ep7uevlrj4or528s31g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
