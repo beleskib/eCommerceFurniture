@@ -9,4 +9,4 @@
 #### View binding : instead of inflating views manually I used view binding.
 #### Glide : Catch images and load them in imageView.
 
-#### Now working on searching the products in a given layout
+#### * Now working on searching the products in a given layout
