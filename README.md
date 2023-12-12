@@ -8,3 +8,5 @@
 #### Coroutines : do some code in the background.
 #### View binding : instead of inflating views manually I used view binding.
 #### Glide : Catch images and load them in imageView.
+
+#### Now working on searching the products in a given layout
