@@ -18,19 +18,19 @@ class FirebaseCommon(
 
 ) {
     private val cartCollection =
-        firestore.collection("user").document(auth.uid!!).collection("cart")
+        auth.uid?.let { firestore.collection("user").document(it).collection("cart") }
 
     fun addProductToCart(cartProduct: CartProduct, onResult: (CartProduct?, Exception?) -> Unit) {
-        cartCollection.document().set(cartProduct).addOnSuccessListener {
+        cartCollection?.document()?.set(cartProduct)?.addOnSuccessListener {
             onResult(cartProduct, null)
-        }.addOnFailureListener {
+        }?.addOnFailureListener {
             onResult(null, it)
         }
     }
 
     fun increaseQuantity(documentId: String, onResult: (String?, Exception?) -> Unit) {
         firestore.runTransaction { transition ->
-            val documentRef = cartCollection.document(documentId)
+            val documentRef = cartCollection!!.document(documentId)
             val document = transition.get(documentRef)
             val productObject = document.toObject(CartProduct::class.java)
             productObject?.let { cartProduct ->
@@ -68,7 +68,7 @@ class FirebaseCommon(
     fun decreaseQuantiy(documentId: String, onResult: (String?, Exception?) -> Unit) {
 
         firestore.runTransaction { transition ->
-            val documentRef = cartCollection.document(documentId)
+            val documentRef = cartCollection!!.document(documentId)
             val document = transition.get(documentRef)
             val productObject = document.toObject(CartProduct::class.java)
             productObject?.let { cartProduct ->

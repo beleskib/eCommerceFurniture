@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -71,22 +72,26 @@ class CartViewModel @Inject constructor(
     }
 
     private fun getCartProducts() {
-        viewModelScope.launch {
-            _cartProducts.emit(Resource.Loading()) }
-
-        firestore.collection("user").document(firebaseAuth.uid!!).collection("cart")
-            .addSnapshotListener { value, error ->
-                if (error != null || value == null) {
-                    viewModelScope.launch {
-                        _cartProducts.emit(Resource.Error(error?.message.toString())) }
-                } else {
-                    cartProductDocuments = value.documents
-                        val cartProduct = value.toObjects(CartProduct::class.java)
-                        viewModelScope.launch {
-                            _cartProducts.emit(Resource.Success(cartProduct)) }
+        if (viewModelScope.isActive) {
+            viewModelScope.launch {
+                _cartProducts.emit(Resource.Loading())
+                firestore.collection("user").document(firebaseAuth.uid!!).collection("cart")
+                    .addSnapshotListener { value, error ->
+                        if (error != null || value == null) {
+                            viewModelScope.launch {
+                                _cartProducts.emit(Resource.Error(error?.message.toString()))
+                            }
+                        } else {
+                            cartProductDocuments = value.documents
+                            val cartProduct = value.toObjects(CartProduct::class.java)
+                            viewModelScope.launch {
+                                _cartProducts.emit(Resource.Success(cartProduct))
+                            }
+                        }
                     }
-                }
             }
+        }
+    }
 
     fun changeQuantity(
         cartProduct: CartProduct,
