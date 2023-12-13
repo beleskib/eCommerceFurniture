@@ -33,55 +33,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline2">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/searchBar"
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/search_box_background">
-
-                <EditText
-                    android:id="@+id/edSearch"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_thin"
-                    android:paddingStart="20dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:singleLine="true"
-                    android:text="Search now"
-                    android:textColor="#919394"
-                    android:textSize="15sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:src="@drawable/ic_search"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+                app:iconifiedByDefault="false"
+                app:searchHintIcon="@null"
+                app:queryHint="Search..."
+                android:focusable="false"/>
             <View
                 android:layout_width="10dp"
                 android:layout_height="match_parent"/>
-            <TextView
-                android:id="@+id/tvCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Cancel"
-                android:fontFamily="@font/poppins_thin"
-                android:singleLine="true"
-                android:textColor="#919394"
-                android:textSize="15sp"
-                android:background="@drawable/icon_background"
-                android:backgroundTint="@color/g_search_and_icons"
-                android:padding="10dp"/>
+
 
         </LinearLayout>
         <androidx.constraintlayout.widget.Guideline
@@ -105,8 +68,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/homeHeader"
-            app:layout_constraintStart_toStartOf="@id/guideline1"
-            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:listitem="@layout/search_rv_item"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout

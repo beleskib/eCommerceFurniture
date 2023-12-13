@@ -1,7 +1,6 @@
 package com.example.ecommercefurniture.fragments.shopping
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,8 @@ import com.example.ecommercefurniture.Activities.ShoppingActivity
 import com.example.ecommercefurniture.R
 import com.example.ecommercefurniture.adapters.SearchCategoryAdapter
 import com.example.ecommercefurniture.adapters.SearchProductAdapter
+import com.example.ecommercefurniture.data.Category
+import com.example.ecommercefurniture.data.Product
 import com.example.ecommercefurniture.databinding.FragmentSearchBinding
 import com.example.ecommercefurniture.fragments.categories.AccesoryFragment
 import com.example.ecommercefurniture.fragments.categories.ChairFragment
@@ -27,9 +28,9 @@ import com.example.ecommercefurniture.util.Resource
 import com.example.ecommercefurniture.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Locale
 
 private val TAG = "SearchFragment"
-
 
 @AndroidEntryPoint
 class SearchFragment: Fragment(R.layout.fragment_search) {
@@ -44,6 +45,7 @@ class SearchFragment: Fragment(R.layout.fragment_search) {
         viewModel = (activity as ShoppingActivity).viewModela
         viewModel.getCategories()
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,90 +62,89 @@ class SearchFragment: Fragment(R.layout.fragment_search) {
 
         setupSearchCategoryRV()
         setupSearchProductsRV()
-        onCategoryClick()
 
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
 
-
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    filterProducts(it)
+                }
+                return true
+            }
+        })
         lifecycleScope.launchWhenStarted {
-            viewModel.searchProducts.collectLatest {
-
-                when (it) {
-                    is Resource.Loading -> {
-                    //    binding.searchProgressBar.visibility = View.VISIBLE
-                    }
-
+            viewModel.searchProducts.collectLatest { result ->
+                when (result) {
                     is Resource.Success -> {
-
-                        searchProductsAdapter.differ.submitList(it.data)
+                        searchProductsAdapter.differ.submitList(result.data)
                         binding.searchProgressBar.visibility = View.GONE
-
                     }
 
                     is Resource.Error -> {
                         binding.searchProgressBar.visibility = View.GONE
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                     }
 
-                    else -> Unit
-                }
-            }
-        }
-        lifecycleScope.launchWhenStarted {
-            viewModel.searchCategory.collectLatest {
-
-                when (it) {
                     is Resource.Loading -> {
                         binding.searchProgressBar.visibility = View.VISIBLE
                     }
 
-                    is Resource.Success -> {
-                        searchCategoryAdapter.differ.submitList(it.data)
+                    else -> {Unit}
+                }
+            }
+        }
+        searchProductsAdapter.onClick = { product ->
+            navigateToProductOptions(product)
+        }
 
-                    }
 
-                    is Resource.Error -> {
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                    }
-
+        lifecycleScope.launchWhenStarted {
+            viewModel.searchCategory.collectLatest {
+                when (it) {
+                    is Resource.Loading -> { }
+                    is Resource.Success -> { searchCategoryAdapter.differ.submitList(it.data) }
+                    is Resource.Error -> { Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show() }
                     else -> Unit
                 }
             }
         }
-    }
-
-    private fun onCategoryClick() {
         searchCategoryAdapter.onItemClick = { category ->
-            var position = 0
-            when (category.names) {
-                resources.getString(R.string.g_chair) -> position = 1
-                resources.getString(R.string.g_cupboard) -> position = 2
-                resources.getString(R.string.g_table) -> position = 3
-                resources.getString(R.string.g_accessory) -> position = 4
-                resources.getString(R.string.g_furniture) -> position = 5
-            }
-
-            navigateToCategory(position)
+            navigateToCategoryFragment(category)
         }
     }
 
-    private fun navigateToCategory(position: Int) {
-        Log.d("Navigation", "Navigating to position: $position")
+    private fun navigateToCategoryFragment(category: Category) {
         val fragmentTransaction = parentFragmentManager.beginTransaction()
+        val categoryName = category.names
 
-        when (position) {
-            1 -> fragmentTransaction.replace(R.id.fragmentContainer, ChairFragment())
-            2 -> fragmentTransaction.replace(R.id.fragmentContainer, CupboardFragment())
-            3 -> fragmentTransaction.replace(R.id.fragmentContainer, TableFragment())
-            4 -> fragmentTransaction.replace(R.id.fragmentContainer, AccesoryFragment())
-            5 -> fragmentTransaction.replace(R.id.fragmentContainer, FurnitureFragment())
+        when (categoryName) {
+            "Chair" -> fragmentTransaction.replace(R.id.fragmentContainer, ChairFragment())
+            "Cupboard" -> fragmentTransaction.replace(R.id.fragmentContainer, CupboardFragment())
+            "Table" -> fragmentTransaction.replace(R.id.fragmentContainer, TableFragment())
+            "Accessory" -> fragmentTransaction.replace(R.id.fragmentContainer, AccesoryFragment())
+            "Furniture" -> fragmentTransaction.replace(R.id.fragmentContainer, FurnitureFragment())
+            else -> {
+                    //Nada
+                }
         }
-
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
-        Log.d("Navigation", "FragmentTransaction committed successfully")
     }
 
+    private fun filterProducts(query: String) {
+        val searchText = query.toLowerCase(Locale.getDefault())
+        val filteredList = viewModel.searchProducts.value.data?.filter {
+            it.name.toLowerCase(Locale.getDefault()).contains(searchText)
+        }
 
+        filteredList?.let {
+            searchProductsAdapter.differ.submitList(it)
+        }
+    }
     private fun setupSearchProductsRV() {
         searchProductsAdapter = SearchProductAdapter()
         binding.rvSearchProducts.apply {
@@ -154,10 +155,15 @@ class SearchFragment: Fragment(R.layout.fragment_search) {
     private fun setupSearchCategoryRV() {
         searchCategoryAdapter = SearchCategoryAdapter(requireView())
         binding.rvCategories.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
+            layoutManager =
+                GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
             adapter = searchCategoryAdapter
 
         }
+    }
+    private fun navigateToProductOptions(product: Product) {
+        val action = SearchFragmentDirections.actionSearchFragmentToProductDetailsFragment(product)
+        findNavController().navigate(action)
     }
 }
 

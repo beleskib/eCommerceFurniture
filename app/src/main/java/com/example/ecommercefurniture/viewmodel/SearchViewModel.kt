@@ -19,6 +19,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth,
+
 ): ViewModel() {
 
     private val _searchCategory = MutableStateFlow<Resource<List<Category>>>(Resource.Unspecified())
@@ -45,6 +46,7 @@ class SearchViewModel @Inject constructor(
                     viewModelScope.launch {
                         _searchProducts.emit(Resource.Success(searchProductsList))
                     }
+                    pagingSearchInfo.bestProductsSearchPage++
                 }.addOnFailureListener {
                     viewModelScope.launch {
                         _searchProducts.emit(Resource.Error(it.message.toString()))
