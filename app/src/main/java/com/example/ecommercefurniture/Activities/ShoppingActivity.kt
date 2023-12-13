@@ -3,13 +3,11 @@ package com.example.ecommercefurniture.Activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.ecommercefurniture.R
 import com.example.ecommercefurniture.databinding.ActivityShoppingBinding
-import com.example.ecommercefurniture.firebase.FirebaseDb
 import com.example.ecommercefurniture.util.Resource
 import com.example.ecommercefurniture.viewmodel.CartViewModel
 import com.example.ecommercefurniture.viewmodel.SearchViewModel

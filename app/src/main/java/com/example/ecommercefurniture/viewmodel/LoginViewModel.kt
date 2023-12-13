@@ -1,25 +1,16 @@
 package com.example.ecommercefurniture.viewmodel
 
-import android.provider.Settings.Global.getString
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.ecommercefurniture.R
 import com.example.ecommercefurniture.data.User
 import com.example.ecommercefurniture.firebase.FirebaseCommon
-import com.example.ecommercefurniture.firebase.FirebaseDb
-import com.example.ecommercefurniture.util.Constants
 import com.example.ecommercefurniture.util.Resource
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val firestoredb: FirebaseFirestore,
     private val firebaseCommon: FirebaseCommon
 
 ): ViewModel() {
@@ -102,10 +92,12 @@ class LoginViewModel @Inject constructor(
                 }
     }
     fun signInWithGoogle(idToken: String) {
-        saveUserInformationGoogleSignIn.postValue(Resource.Loading())
+        viewModelScope.launch {
+            saveUserInformationGoogleSignIn.postValue(Resource.Loading())
+        }
+
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseCommon.signInWithGoogle(credential).addOnCompleteListener { task ->
-
             if (task.isSuccessful) {
                 val userFirebase = FirebaseAuth.getInstance().currentUser
                 val fullNameArray = userFirebase!!.displayName?.split(" ")
@@ -118,12 +110,14 @@ class LoginViewModel @Inject constructor(
                     secondName = fullNameArray[1]
 
                 val user = User(firstName, secondName, userFirebase.email.toString(), "")
+
+                // Call the correct method to save user information
                 saveUserInformationGoogleSignIn(userFirebase.uid, user)
-            } else
+            } else {
                 saveUserInformationGoogleSignIn.postValue(Resource.Error(task.exception.toString()))
-
-
+            }
         }
     }
+
 
 }

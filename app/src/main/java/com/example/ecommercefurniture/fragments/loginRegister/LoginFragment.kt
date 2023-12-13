@@ -21,6 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -66,6 +67,28 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
             }
         }
         lifecycleScope.launchWhenStarted {
+            viewModel.saveUserInformationGoogleSignIn.observe(viewLifecycleOwner) { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        binding.btnLoginLogin.startAnimation()
+                    }
+                    is Resource.Success -> {
+                        binding.btnLoginLogin.revertAnimation()
+                        // User information saved successfully, navigate to ShoppingActivity
+                        Intent(requireActivity(), ShoppingActivity::class.java).also { intent ->
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                        }
+                    }
+                    is Resource.Error -> {
+                        // Handle error state if needed
+                        Toast.makeText(requireContext(), resource.message, Toast.LENGTH_SHORT).show()
+                        binding.btnLoginLogin.revertAnimation()
+                    }
+                }
+            }
+        }
+        lifecycleScope.launchWhenStarted {
             viewModel.resetpw.collect{
                 when(it) {
                     is Resource.Loading -> {
@@ -89,9 +112,13 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
                     }
                     is Resource.Success -> {
                         binding.btnLoginLogin.revertAnimation()
-                        Intent(requireActivity(), ShoppingActivity::class.java).also {
-                            intent -> intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
+                        if (it.data != null && it.data.providerData.any { it.providerId == GoogleAuthProvider.PROVIDER_ID }) {
+                            Intent(requireActivity(), ShoppingActivity::class.java).also { intent ->
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(intent)
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_SHORT).show()
                         }
                     }
                     is Resource.Error -> {
@@ -137,7 +164,6 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         binding.IVGoogleLogin.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, GOOGLE_REQ_CODE)
-            Toast.makeText(requireContext(), "You are Signed in! Please re-run the app", Toast.LENGTH_SHORT).show()
         }
     }
 }
