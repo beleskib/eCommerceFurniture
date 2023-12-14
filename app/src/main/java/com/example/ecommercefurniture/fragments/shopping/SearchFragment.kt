@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -24,7 +25,9 @@ import com.example.ecommercefurniture.fragments.categories.ChairFragment
 import com.example.ecommercefurniture.fragments.categories.CupboardFragment
 import com.example.ecommercefurniture.fragments.categories.FurnitureFragment
 import com.example.ecommercefurniture.fragments.categories.TableFragment
+import com.example.ecommercefurniture.util.HorizontalItemDecoration
 import com.example.ecommercefurniture.util.Resource
+import com.example.ecommercefurniture.util.showBottomNavigationView
 import com.example.ecommercefurniture.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -115,6 +118,13 @@ class SearchFragment: Fragment(R.layout.fragment_search) {
         searchCategoryAdapter.onItemClick = { category ->
             navigateToCategoryFragment(category)
         }
+        binding.searchNestedScroll
+            .setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener{ view, _, scrollY, _, _ ->
+                if (view.getChildAt(0).bottom <= view.height + scrollY) {
+                    viewModel.getProducts()
+
+                }
+            })
     }
 
     private fun navigateToCategoryFragment(category: Category) {
@@ -150,6 +160,7 @@ class SearchFragment: Fragment(R.layout.fragment_search) {
         binding.rvSearchProducts.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = searchProductsAdapter
+            addItemDecoration(HorizontalItemDecoration())
         }
     }
     private fun setupSearchCategoryRV() {
@@ -164,6 +175,10 @@ class SearchFragment: Fragment(R.layout.fragment_search) {
     private fun navigateToProductOptions(product: Product) {
         val action = SearchFragmentDirections.actionSearchFragmentToProductDetailsFragment(product)
         findNavController().navigate(action)
+    }
+    override fun onResume() {
+        super.onResume()
+        showBottomNavigationView()
     }
 }
 

@@ -7,7 +7,7 @@
     android:backgroundTint="@color/g_white"
     app:cardElevation="0dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -16,10 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
-            android:background="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:background="@color/white" />
 
         <TextView
             android:id="@+id/tvSearchProductName"
@@ -28,26 +25,17 @@
             android:padding="10dp"
             android:text="Product"
             android:textColor="@color/g_gray500"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/line"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.021"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:ignore="MissingConstraints" />
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginStart="380dp"
+            android:foregroundGravity="center"
             android:padding="10dp"
-            android:src="@drawable/ic_arrow"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/tvSearchProductName"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:src="@drawable/ic_arrow" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

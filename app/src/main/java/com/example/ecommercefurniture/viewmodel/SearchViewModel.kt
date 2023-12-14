@@ -34,7 +34,7 @@ class SearchViewModel @Inject constructor(
         getProducts()
     }
 
-    private fun getProducts() {
+     fun getProducts() {
             if (!pagingSearchInfo.isPagingEnd) {
             viewModelScope.launch {
             _searchProducts.emit(Resource.Loading())

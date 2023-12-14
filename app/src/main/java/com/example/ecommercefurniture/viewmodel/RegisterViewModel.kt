@@ -37,7 +37,6 @@ class  RegisterViewModel @Inject constructor(
             .addOnSuccessListener {
                 it.user?.let {
                     saveUserInfo(it.uid, user)
-              //      _register.value = Resource.Success(it)
                 }
             }.addOnFailureListener {
                 _register.value = Resource.Error(it.message.toString())
